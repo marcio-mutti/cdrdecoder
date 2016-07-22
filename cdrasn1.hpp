@@ -25,6 +25,7 @@ protected:
 
 	//Methods
 	std::vector<std::string> readline(FILE *);
+	std::string readword(FILE *);
 	void gotoendline(FILE *);
 };
 }

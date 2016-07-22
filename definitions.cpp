@@ -5,21 +5,22 @@
 using namespace std;
 using namespace cdrasn1;
 
-definitions::definitions() : data(nullptr)				{  }
+cdrasn1::definitions::definitions() : data(nullptr)				{  }
 
-definitions::definitions(const char * filename) throw(const runtime_error&)
+cdrasn1::definitions::definitions(const char * filename) throw(const runtime_error&)
 {
 	try
 	{
-	load_file(filename);
+		load_file(filename);
 	}
 	catch (const runtime_error& err)
 	{
-	throw (err);
+		throw (err);
 	}
+	return;
 }
 
-void definitions::load_file(const char * filename) throw(const runtime_error&)
+void cdrasn1::definitions::load_file(const char * filename) throw(const runtime_error&)
 {
 	FILE * definitions_file(nullptr);
 	size_t linenumber(0);
@@ -54,7 +55,7 @@ void definitions::load_file(const char * filename) throw(const runtime_error&)
 	fclose(definitions_file);
 }
 
-vector<string> definitions::readline(FILE * definitions_file)
+vector<string> cdrasn1::definitions::readline(FILE * definitions_file)
 {
 	char byte(0);
 	bool commenttrigger(false);
@@ -95,7 +96,39 @@ vector<string> definitions::readline(FILE * definitions_file)
 	return result;
 }
 
-void definitions::gotoendline(FILE * definitions_file)
+string cdrasn1::definitions::readword(FILE * definitions_file)
+{
+	char byte(0);
+	string result;
+	bool commenttrigger;
+	while (!feof(definitions_file))
+	{
+		fread(&byte,1,1,definitions_file);
+		switch(byte)
+		{
+		case '-':
+			if (commenttrigger)
+			{
+				result.pop_back();
+				gotoendline(definitions_file);
+				return result;
+			}
+			else
+			{
+				commenttrigger=true;
+			}
+		break;
+		case ' ':
+		case '\n':
+			if (result.size() == 0) continue;
+			return result;
+		}
+		result.push_back(byte);
+	}
+	return result;
+}
+
+void cdrasn1::definitions::gotoendline(FILE * definitions_file)
 {
 	char byte(0);
 	while (!feof(definitions_file))
