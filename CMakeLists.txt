@@ -8,4 +8,5 @@ add_library(cdrasn1 SHARED
 		parser.cpp
 		definitions.cpp
 		auxfun.cpp
+		tags.cpp
 		defloader.cpp)

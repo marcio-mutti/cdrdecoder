@@ -151,7 +151,8 @@ void cdrasn1::definitions::main_options(FILE* definitions_file) throw(
 }
 cdrasn1::definition_variable cdrasn1::definitions::readvariable(
     FILE* definitions_file) throw(const runtime_error&) {
-	string variable, definer, type;
+	int savepoint(0);
+	string variable, definer, type, continuity;
 	try {
 		variable = readword(definitions_file);
 		definer = readword(definitions_file);
@@ -170,5 +171,26 @@ cdrasn1::definition_variable cdrasn1::definitions::readvariable(
 		message += variable + "\n Found " + definer + " instead.";
 		throw(runtime_error(message));
 	}
-		return definition_variable{variable, parse_type(type)};
+	savepoint = ftell(definitions_file);
+	continuity = readword(definitions_file); //TODO: There is the case when the size or the range is informed
+	if (continuity == "{") {
+		string workword, nextword;
+		while (!feof(definitions_file) && continuity != "}") { //TODO: Read the options of the custom type
+			//The fields are separated by commas
+			workword=readword(definitions_file);
+			nextword=readword(definitions_file);
+			if (cdrtype == tagtype::automatic_type) //TODO: Implementar o tipo automático
+			{
+
+			} else {
+				if (type == "INTEGER" || type == "ENUMERATED") 
+				{
+					if(nextword.front() == '(')
+				}
+			}
+		}
+	} else {
+		fseek(definitions_file, savepoint, SEEK_SET);
+	}
+	return definition_variable{variable, parse_type(type)};
 }

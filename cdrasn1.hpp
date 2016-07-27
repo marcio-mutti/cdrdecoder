@@ -1,6 +1,8 @@
 #ifndef CDRASN1_BLOCK
 #define CDRASN1_BLOCK
 
+#include <map>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -33,13 +35,27 @@ enum asn1type
 	set,
 	set_of,
 	choice,
-	identifier,
+	custom,
 	undefined
 };
 struct definition_variable
 {
 	std::string parameter;
 	asn1type type;
+	std::map<unsigned int,std::string> refered_tags;
+	std::map<unsigned int,std::string> value_options;
+	const bool operator==(const definition_variable&) const;
+};
+struct tagdeflink
+{
+	unsigned int tag;
+	definition_variable * def;
+};
+struct tags
+{
+	unsigned int tag;
+	std::map<unsigned int, tagdeflink> children;
+	const bool operator<(const tags&) const;
 };
 asn1type parse_type(const std::string&);
 class definitions
@@ -51,6 +67,7 @@ public:
 protected:
 	std::string root_name;
 	tagtype cdrtype;
+	std::set<tags> available_tags;
 	//Methods
 	std::string readword(FILE *);
 	void gotoendline(FILE *);

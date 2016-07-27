@@ -20,6 +20,6 @@ cdrasn1::asn1type cdrasn1::parse_type(const string& TYPE) {
 		return asn1type::set_of;  // TODO: readword precisa pegar as set
 					  // of
 	if (TYPE == "CHOICE") return asn1type::choice;
-	if (!TYPE.empty()) return asn1type::identifier;
+	if (!TYPE.empty()) return asn1type::custom;
 	return asn1type::undefined;
 }
