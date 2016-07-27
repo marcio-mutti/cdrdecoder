@@ -151,6 +151,7 @@ void cdrasn1::definitions::main_options(FILE* definitions_file) throw(
 }
 cdrasn1::definition_variable cdrasn1::definitions::readvariable(
     FILE* definitions_file) throw(const runtime_error&) {
+	definition_variable result;
 	int savepoint(0);
 	string variable, definer, type, continuity;
 	try {
@@ -171,26 +172,46 @@ cdrasn1::definition_variable cdrasn1::definitions::readvariable(
 		message += variable + "\n Found " + definer + " instead.";
 		throw(runtime_error(message));
 	}
+	result.parameter = variable;
+	result.type = parse_type(type);
 	savepoint = ftell(definitions_file);
-	continuity = readword(definitions_file); //TODO: There is the case when the size or the range is informed
+	continuity = readword(definitions_file);  // TODO: There is the case
+						  // when the size or the range
+						  // is informed
 	if (continuity == "{") {
 		string workword, nextword;
-		while (!feof(definitions_file) && continuity != "}") { //TODO: Read the options of the custom type
-			//The fields are separated by commas
-			workword=readword(definitions_file);
-			nextword=readword(definitions_file);
-			if (cdrtype == tagtype::automatic_type) //TODO: Implementar o tipo automático
+		while (!feof(definitions_file) &&
+		       continuity !=
+			   "}") {  // TODO: Read the options of the custom type
+			// The fields are separated by commas
+			workword = readword(definitions_file);
+			nextword = readword(definitions_file);
+			if (cdrtype == tagtype::automatic_type)  // TODO:
+								 // Implementar
+								 // o tipo
+								 // automático
 			{
-
 			} else {
-				if (type == "INTEGER" || type == "ENUMERATED") 
-				{
-					if(nextword.front() == '(')
+				if (type == "INTEGER" || type == "ENUMERATED") {
+					if (nextword.front() == '(') {
+						// Case of enumerated options
+						unsigned int value(0);
+						try {
+							value =
+							    extract_number_from_brackets(
+								nextword);
+						} catch (
+						    const runtime_error& err) {
+							// TODO: Deal with it
+						}
+						result.value_options.insert(
+						    make_pair(value, workword));
+					}
 				}
 			}
 		}
 	} else {
 		fseek(definitions_file, savepoint, SEEK_SET);
 	}
-	return definition_variable{variable, parse_type(type)};
+	return result;
 }

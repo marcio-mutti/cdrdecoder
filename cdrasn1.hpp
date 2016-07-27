@@ -58,6 +58,8 @@ struct tags
 	const bool operator<(const tags&) const;
 };
 asn1type parse_type(const std::string&);
+const unsigned int extract_number_from_brackets(const std::string&) 
+							throw(const std::runtime_error&);
 class definitions
 {
 public:

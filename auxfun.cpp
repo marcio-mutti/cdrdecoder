@@ -23,3 +23,24 @@ cdrasn1::asn1type cdrasn1::parse_type(const string& TYPE) {
 	if (!TYPE.empty()) return asn1type::custom;
 	return asn1type::undefined;
 }
+const unsigned int cdrasn1::extract_number_from_brackets(
+    const std::string& bracketed) throw(const runtime_error&) {
+	size_t i(0);
+	bool nstarted(false);
+	string straux;
+	while (i != bracketed.size()) {
+		if (bracketed.at(i) > 47 && bracketed.at(i) < 57) {
+			if (!nstarted) nstarted = true;
+			straux.push_back(bracketed.at(i));
+		} else {
+			if (nstarted) break;
+		}
+		++i;
+	}
+	if (straux.empty()) {
+		string message("No number was found when parsing the string ");
+		message += bracketed + ".";
+		throw(runtime_error(message));
+	}
+	return std::stoul(straux);
+}
