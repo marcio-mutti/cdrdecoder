@@ -7,7 +7,8 @@ using namespace cdrasn1;
 
 cdrasn1::definitions::definitions() {}
 
-cdrasn1::definitions::definitions(const char* filename) throw(const runtime_error&) {
+cdrasn1::definitions::definitions(const char* filename) throw(
+    const runtime_error&) {
 	try {
 		load_file(filename);
 	} catch (const runtime_error& err) {
@@ -41,8 +42,20 @@ string cdrasn1::definitions::readword(FILE* definitions_file) {
 		switch (byte) {
 			case '-':
 				if (commenttrigger) {
+					int savepoint(ftell(definitions_file));
 					result.pop_back();
 					gotoendline(definitions_file);
+					if (result == "SEQUENCE" ||
+					    result == "SET") {
+						string lookforward(
+						    readword(definitions_file));
+						if (lookforward == "OF")
+							result += " OF";
+						else
+							fseek(definitions_file,
+							      savepoint,
+							      SEEK_SET);
+					}
 					return result;
 
 				} else {
@@ -52,6 +65,16 @@ string cdrasn1::definitions::readword(FILE* definitions_file) {
 			case ' ':
 			case '\n':
 				if (result.size() == 0) continue;
+				int savepoint(ftell(definitions_file));
+				if (result == "SEQUENCE" || result == "SET") {
+					string lookforward(
+					    readword(definitions_file));
+					if (lookforward == "OF")
+						result += " OF";
+					else
+						fseek(definitions_file,
+						      savepoint, SEEK_SET);
+				}
 				return result;
 		}
 		result.push_back(byte);
@@ -119,4 +142,33 @@ void cdrasn1::definitions::preambule(
 		message += workword + " instead.";
 		throw(runtime_error(message));
 	}
+}
+
+void cdrasn1::definitions::main_options(FILE* definitions_file) throw(
+    const runtime_error&) {
+	// TODO: Read the variable title and proceed;
+	definition_variable first_option(readvariable(definitions_file));
+}
+cdrasn1::definition_variable cdrasn1::definitions::readvariable(
+    FILE* definitions_file) throw(const runtime_error&) {
+	string variable, definer, type;
+	try {
+		variable = readword(definitions_file);
+		definer = readword(definitions_file);
+		type = readword(definitions_file);
+	} catch (const runtime_error& err) {
+		string message(
+		    "Found an error trying to read a new option in the "
+		    "definitions file.\n");
+		message += err.what();
+		throw(runtime_error(message));
+	}
+	if (definer != "::=") {
+		string message(
+		    "The definer statement wasn't correctly found when reading "
+		    "variable: ");
+		message += variable + "\n Found " + definer + " instead.";
+		throw(runtime_error(message));
+	}
+		return definition_variable{variable, parse_type(type)};
 }
