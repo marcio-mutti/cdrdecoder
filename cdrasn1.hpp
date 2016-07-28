@@ -44,6 +44,7 @@ struct definition_variable
 	asn1type type;
 	std::map<unsigned int,std::string> refered_tags;
 	std::map<unsigned int,std::string> value_options;
+	std::map<unsigned int, bool> optional_tags;
 	const bool operator==(const definition_variable&) const;
 };
 struct tagdeflink
@@ -75,6 +76,7 @@ protected:
 	void gotoendline(FILE *);
 	void preambule(FILE *, const std::string&)	throw(const std::runtime_error&);
 	void main_options(FILE *)			throw(const std::runtime_error&);
+	void custom_types(FILE *)			throw(const std::runtime_error&);
 	definition_variable readvariable(FILE *)	throw(const std::runtime_error&);
 };
 }

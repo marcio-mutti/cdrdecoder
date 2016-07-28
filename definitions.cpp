@@ -27,6 +27,7 @@ void cdrasn1::definitions::load_file(const char* filename) throw(
 		if (workword.empty()) continue;
 		if (root_name.empty()) {
 			preambule(definitions_file, workword);
+			main_options(definitions_file);
 			continue;
 		}
 	}
@@ -63,6 +64,7 @@ string cdrasn1::definitions::readword(FILE* definitions_file) {
 				}
 				break;
 			case ' ':
+			case '\t':
 			case '\n':
 				if (result.size() == 0) continue;
 				int savepoint(ftell(definitions_file));
@@ -192,7 +194,10 @@ cdrasn1::definition_variable cdrasn1::definitions::readvariable(
 								 // automático
 			{
 			} else {
-				if (type == "INTEGER" || type == "ENUMERATED") {
+				// if (type == "INTEGER" || type ==
+				// "ENUMERATED") {
+				if (result.type == asn1type::integer ||
+				    result.type == asn1type::enumerated) {
 					if (nextword.front() == '(') {
 						// Case of enumerated options
 						unsigned int value(0);
@@ -208,6 +213,7 @@ cdrasn1::definition_variable cdrasn1::definitions::readvariable(
 						    make_pair(value, workword));
 					}
 				}
+				// TODO: Continue with the other types.
 			}
 		}
 	} else {
