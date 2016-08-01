@@ -182,11 +182,13 @@ cdrasn1::definition_variable cdrasn1::definitions::readvariable(
 						  // is informed
 	if (continuity == "{") {
 		string workword, nextword;
+		size_t intern_variable_savepoint(0);
 		while (!feof(definitions_file) &&
 		       continuity !=
 			   "}") {  // TODO: Read the options of the custom type
 			// The fields are separated by commas
 			workword = readword(definitions_file);
+			intern_variable_savepoint=ftell(definitions_file);
 			nextword = readword(definitions_file);
 			if (cdrtype == tagtype::automatic_type)  // TODO:
 								 // Implementar
@@ -211,9 +213,15 @@ cdrasn1::definition_variable cdrasn1::definitions::readvariable(
 						}
 						result.value_options.insert(
 						    make_pair(value, workword));
+					} else {
+						fseek(definitions_file,intern_variable_savepoint,SEEK_SET);
 					}
 				}
-				// TODO: Continue with the other types.
+				// TODO: repensar o tipo do resultado para poder referenciar as custom tags.
+				else
+				{
+					//result.refered_tags.insert
+				}
 			}
 		}
 	} else {
