@@ -5,6 +5,7 @@ set(CMAKE_BUILD_TYPE Debug)
 add_definitions(-DDEBUG)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -ggdb3")
 add_library(cdrasn1 SHARED
+		asn1mask.cpp
 		parser.cpp
 		definitions.cpp
 		auxfun.cpp

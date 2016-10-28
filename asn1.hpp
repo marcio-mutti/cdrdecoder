@@ -72,6 +72,14 @@ const std::map<int, data_type> universal_tags{
     {34, data_type::duration},
     {35, data_type::oid_itnl_resource_identifier},
     {36, data_type::rel_oid_itnl_resource_identifier}};
+class asn1Mask
+{
+public:
+	asn1Mask();
+	virtual ~asn1Mask();
+protected:
+	std::map<int,asn1Mask> definedValues; //This map will hosd the possibilities involved for each drill level of the asn1 binary file. Being defined as <tag number,mask>. Probably wrong and wiil need refinning, but this is a start.
+};
 };
 
 #endif
