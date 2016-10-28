@@ -2,6 +2,8 @@
 #define BLOCK_ASN1
 
 #include <map>
+#include <stdexcept>
+#include <string>
 
 // Namespace definition
 namespace asn1 {
@@ -46,7 +48,7 @@ const std::map<int, data_type> universal_tags{
     {8, data_type::external},
     {9, data_type::real},
     {10, data_type::enumerated},
-    {11, embedded_pdv},
+    {11, data_type::embedded_pdv},
     {12, data_type::utf8string},
     {13, data_type::relative_obg_identifier},
     {14, data_type::time},
@@ -72,13 +74,33 @@ const std::map<int, data_type> universal_tags{
     {34, data_type::duration},
     {35, data_type::oid_itnl_resource_identifier},
     {36, data_type::rel_oid_itnl_resource_identifier}};
-class asn1Mask
-{
+const std::map<std::string, data_type> parametrization{
+    {{"BOOLEAN"}, data_type::boolean},
+    {{"INTEGER"}, data_type::integer},
+    {{"ENUMERATED"}, data_type::enumerated},
+    {{"REAL"}, data_type::real},
+    {{"BIT STRING"}, data_type::bitstring},
+    {{"OCTET STRING"}, data_type::octetstring},
+    {{"NULL"}, data_type::null},
+    {{"SEQUENCE"}, data_type::seq_seqof},
+    {{"SEQUENCE OF"}, data_type::seq_seqof},
+    {{"SET"}, data_type::set_setof},
+    {{"SET OF"}, data_type::set_setof}};
+class asn1Mask {
 public:
-	asn1Mask();
-	virtual ~asn1Mask();
+  asn1Mask();
+  asn1Mask(const char *) throw(const std::runtime_error &);
+  virtual ~asn1Mask();
+  void loadFileDefinitions(const char *) throw(const std::runtime_error &);
+
 protected:
-	std::map<int,asn1Mask> definedValues; //This map will hosd the possibilities involved for each drill level of the asn1 binary file. Being defined as <tag number,mask>. Probably wrong and wiil need refinning, but this is a start.
+  data_type asn1_type;
+  std::map<int, asn1Mask> definedValues; // This map will hosd the possibilities
+                                         // involved for each drill level of the
+                                         // asn1 binary file. Being defined as
+                                         // <tag number,mask>. Probably wrong
+                                         // and wiil need refinning, but this is
+                                         // a start.
 };
 };
 
